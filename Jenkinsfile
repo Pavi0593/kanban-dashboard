@@ -20,19 +20,30 @@ pipeline {
       } 
     } 
     stage('Build') { steps { sh 'docker build --pull -t ${IMAGE} .' } } 
-    stage('Push') { 
-      steps { 
-        withCredentials([usernamePassword(credentialsId: env.REGISTRY_CREDENTIALS_ID, usernameVariable: 'REG_USER', passwordVariable: 'REG_TOKEN')]) { 
-          sh ''' 
-            set +x 
-            echo "$REG_TOKEN" | docker login -u "$REG_USER" --password-stdin 
-            docker push "$IMAGE" 
-            docker logout 
-          ''' 
-        } 
-      } 
-    } 
-    stage('Deploy') { 
+    stage('Push') {
+    steps {
+        script {
+            echo "Image being pushed: ${env.IMAGE}"
+        }
+
+        withCredentials([
+            usernamePassword(
+                credentialsId: env.REGISTRY_CREDENTIALS_ID,
+                usernameVariable: 'REG_USER',
+                passwordVariable: 'REG_TOKEN'
+            )
+        ]) {
+            sh '''
+                set +x
+                echo "$REG_TOKEN" | docker login -u "$REG_USER" --password-stdin
+                echo "Pushing image: $IMAGE"
+                docker push "$IMAGE"
+                docker logout
+            '''
+        }
+    }
+}
+stage('Deploy') { 
       steps { 
         sh ''' 
           set -eu 
