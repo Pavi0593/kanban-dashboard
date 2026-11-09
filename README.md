@@ -72,3 +72,47 @@ export default defineConfig([
 ])
 ```
 Webhook verification completed.
+Security Validation
+The final Docker image was scanned using Trivy.
+
+Image scanned: pavi0593/kanban-dashboard:8-2fe2572
+
+Vulnerability Scan
+Trivy reported 213 vulnerability findings in the final container image.
+
+These findings are documented for future remediation and dependency/base-image improvement.
+
+Secret Scan
+A separate Trivy secret scan was performed against the final Docker image.
+
+Result:
+
+Embedded secret findings: 0
+
+No embedded secrets were detected by the secret scan.
+
+Docker Resource Limits
+The application container is configured with:
+
+Memory: 384 MiB
+CPU: 0.75 CPU
+This prevents the application container from consuming all EC2 host resources.
+
+Health Validation
+Deployment success requires:
+
+Container status: running
+Docker HEALTHCHECK status: healthy
+/health endpoint: successful
+Application HTTP response: 200 OK
+Automatic Rollback
+Automatic rollback was tested by deliberately deploying a container with a failing Docker health check.
+
+Jenkins detected the unhealthy deployment during the Health Check stage and restored the previous working Docker image.
+
+After rollback, the restored container was verified as running and healthy.
+
+GitHub Webhook
+GitHub Webhook automatically triggers the Jenkins pipeline whenever a new commit is pushed to the main branch.
+
+This removes the need to manually click Build Now for application deployments.
